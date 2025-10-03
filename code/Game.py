@@ -7,9 +7,12 @@ class Game:
 
     def __init__(self):
         pygame.init()
-        self.window = pygame.display.set_mode(size=(800, 600))
+        self.window = pygame.display.set_mode(size=(1136, 768))
 
     def run(self):
+        pygame.mixer_music.load('./sons/music-for-game-fun-kid-game-163649.mp3')
+        pygame.mixer_music.play(-1)
+
         while True:
             menu = Menu(self.window)
             menu.run()
