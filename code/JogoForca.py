@@ -34,27 +34,37 @@ class JogoForca:
         if qtdeErros >= 6: pg.draw.line(self.window, branco, (300, 350), (225, 450), 10)  # Perna dir
 
     def btJogarNovamente(self, window):
-        branco = (255, 255, 255)
-        Amarelo = (255, 255, 0)
+        cinza = (30, 30, 30)
+        amarelo = (255, 255, 0)
         larguraButtom, alturaButtom = 160, 40
-        btX, btY = 600, 80
-        pg.draw.rect(window, branco, (btX, btY, larguraButtom, alturaButtom), border_radius=8)
-        texto = self.font_rb.render('Jogar Novamente', True, Amarelo)
-        window.blit(texto, (600, 120))
+        margemButtom = 20
+        margemButtom2 = 20
+        x = window.get_width() - margemButtom - 2 * larguraButtom - 10
+        y = margemButtom2
+        pg.draw.rect(window, cinza, (x, y, larguraButtom, alturaButtom), border_radius=8)
+        texto = self.font_rb.render('Jogar Novamente', True, amarelo)
+        texto_rect = texto.get_rect(center=(x + larguraButtom // 2, y + alturaButtom // 2))
+        window.blit(texto, texto_rect)
 
     def btMenuInicial(self, window):
-        branco = (255, 255, 255)
-        Amarelo = (255, 255, 0)
+        cinza = (30, 30, 30)
+        amarelo = (255, 255, 0)
         larguraButtom, alturaButtom = 160, 40
-        btX, btY = 500, 80
-        pg.draw.rect(window, branco, (btX, btY, larguraButtom, alturaButtom), border_radius=8)
-        texto = self.font_rb.render('Menu Inicial', True, Amarelo)
-        window.blit(texto, (600, 120))
+        margemButtom = 20
+        margemButtom2 = 20
+        x = window.get_width() - margemButtom - larguraButtom
+        y = margemButtom2
+        pg.draw.rect(window, cinza, (x, y, larguraButtom, alturaButtom), border_radius=8)
+        texto = self.font_rb.render('Menu Inicial', True, amarelo)
+        texto_rect = texto.get_rect(center=(x + larguraButtom // 2, y + alturaButtom // 2))
+        window.blit(texto, texto_rect)
 
     def run(self):
         rodando = True
         qtdeErros = 6
         chances = 0
+        ganhou = False
+        perdeu = False
         while rodando:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -65,8 +75,13 @@ class JogoForca:
                     if letra.isalpha() and len(letra) == 1:
                         if letra not in self.letrasClicadas:
                             self.letrasClicadas.append(letra)
-                            if letra not in self.Palavras.PalavraUsada:
+                            if letra in self.Palavras.PalavraUsada:
+                                pg.mixer_music.load('./sons/correct-6033.mp3')
+                                pg.mixer_music.play()
+                            else:
                                 chances += 1
+                                pg.mixer_music.load('./sons/incorrect-293358.mp3')
+                                pg.mixer_music.play()
 
                 if event.type == pg.MOUSEBUTTONDOWN:
                     pos = pg.mouse.get_pos()
@@ -74,8 +89,16 @@ class JogoForca:
                         if ret.collidepoint(pos):
                             if letra not in self.letrasClicadas:
                                 self.letrasClicadas.append(letra)
-                                if letra not in self.Palavras.PalavraUsada:
+                                if letra in self.Palavras.PalavraUsada:
+                                    pg.mixer_music.load('./sons/correct.mp3')
+                                    pg.mixer_music.play()
+                                else:
                                     chances += 1
+                                    pg.mixer_music.load('./sons/incorrect.mp3')
+                                    pg.mixer_music.play()
+
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    pos = pg.mouse.get_pos()
 
             self.window.blit(self.bg_image, self.rect)
             self.alfabeto.letrasAlfabeto(self.letrasClicadas)
@@ -84,12 +107,28 @@ class JogoForca:
             self.btJogarNovamente(self.window)
             self.btMenuInicial(self.window)
 
-            if chances >= qtdeErros:
-                rodando = False
-            if all(letra.upper() in self.letrasClicadas or letra == " " for letra in self.Palavras.PalavraUsada):
-                rodando = False
+            if not ganhou and all(letra.upper() in self.letrasClicadas or letra == " " for letra in self.Palavras.PalavraUsada):
+                ganhou = True
+                pg.mixer_music.load('./sons/applause-cheer-236786.mp3')
+                pg.mixer_music.play()
+
+            if not perdeu and chances >= qtdeErros:
+                perdeu = True
+                pg.mixer_music.load('./sons/fiasco-154915.mp3')
+                pg.mixer_music.play()
+
+            if ganhou:
+                fonte = pg.font.SysFont("Space Mono", 48)
+                texto = fonte.render('Você ganhou!', True, (0, 255, 0))
+                textoRect = texto.get_rect(center=(self.window.get_width() // 2, 60))
+                self.window.blit(texto, textoRect)
+            elif perdeu:
+                fonte = pg.font.SysFont("Space Mono", 30)
+                texto = fonte.render(f'Você perdeu! A palavra era: {self.Palavras.PalavraUsada}', True, (255, 0, 0))
+                textoRect = texto.get_rect(center=(self.window.get_width() // 2, 60))
+                self.window.blit(texto, textoRect)
+
+
 
             pg.display.flip()
         pg.quit()
-
-

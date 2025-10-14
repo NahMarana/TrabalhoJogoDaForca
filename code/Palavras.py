@@ -6,7 +6,7 @@ class Palavras:
     def __init__(self, window):
         self.window = window
         self.ListPalavras = ["CARRO", "CACHORRO", "CANECA", "LAPIS DE COR"]
-        self.PalavrasUsada = ""  # Palavra sorteada atual
+        self.PalavrasUsada = ""
 
     def PalavrasRandom(self):
         self.PalavraUsada = random.choice(self.ListPalavras)

@@ -19,14 +19,14 @@ class Alfabeto:
         idx = 0
 
         for NumLinha, numCol in enumerate(QtdePorlinhas):
-            largura_botao = (largura - (numCol - 1) * padding) // numCol
-            offset_x = x0 + (largura - (numCol * largura_botao + (numCol - 1) * padding)) // 2
+            larguraBotao = (largura - (numCol - 1) * padding) // numCol
+            offset_x = x0 + (largura - (numCol * larguraBotao + (numCol - 1) * padding)) // 2
             y = y0 + NumLinha * (Buttom + padding)
             for col in range(numCol):
-                x = offset_x + col * (largura_botao + padding)
+                x = offset_x + col * (larguraBotao + padding)
                 CorDoFundo = (30, 30, 30)
                 CorDoTexto = (150, 150, 150) if alfabeto[idx] in letrasClicadas else (255, 255, 255)
-                ret = pg.Rect(x, y, largura_botao, Buttom)
+                ret = pg.Rect(x, y, larguraBotao, Buttom)
                 pg.draw.rect(self.window, CorDoFundo, ret, border_radius=8)
                 LetraImg = font.render(alfabeto[idx], True, CorDoTexto)
                 letra_rect = LetraImg.get_rect(center=ret.center)
