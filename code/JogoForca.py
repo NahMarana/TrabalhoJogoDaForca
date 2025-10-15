@@ -35,16 +35,18 @@ class JogoForca:
 
     def btJogarNovamente(self, window):
         cinza = (30, 30, 30)
-        amarelo = (255, 255, 0)
+        amarelo = (255, 255, 0),
         larguraButtom, alturaButtom = 160, 40
         margemButtom = 20
         margemButtom2 = 20
         x = window.get_width() - margemButtom - 2 * larguraButtom - 10
         y = margemButtom2
+        rect = pg.Rect(x, y, larguraButtom, alturaButtom)
         pg.draw.rect(window, cinza, (x, y, larguraButtom, alturaButtom), border_radius=8)
         texto = self.font_rb.render('Jogar Novamente', True, amarelo)
         texto_rect = texto.get_rect(center=(x + larguraButtom // 2, y + alturaButtom // 2))
         window.blit(texto, texto_rect)
+        return rect
 
     def btMenuInicial(self, window):
         cinza = (30, 30, 30)
@@ -54,10 +56,12 @@ class JogoForca:
         margemButtom2 = 20
         x = window.get_width() - margemButtom - larguraButtom
         y = margemButtom2
+        rect = pg.Rect(x, y, larguraButtom, alturaButtom)
         pg.draw.rect(window, cinza, (x, y, larguraButtom, alturaButtom), border_radius=8)
         texto = self.font_rb.render('Menu Inicial', True, amarelo)
         texto_rect = texto.get_rect(center=(x + larguraButtom // 2, y + alturaButtom // 2))
         window.blit(texto, texto_rect)
+        return rect
 
     def run(self):
         rodando = True
@@ -66,6 +70,13 @@ class JogoForca:
         ganhou = False
         perdeu = False
         while rodando:
+            self.window.blit(self.bg_image, self.rect)
+            self.alfabeto.letrasAlfabeto(self.letrasClicadas)
+            self.Palavras.LinhasDasPalavras(self.letrasClicadas)
+            self.DrawForca(chances)
+            btJogarNovamente_rect = self.btJogarNovamente(self.window)
+            btMenuInicial_rect = self.btMenuInicial(self.window)
+
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     rodando = False
@@ -85,27 +96,28 @@ class JogoForca:
 
                 if event.type == pg.MOUSEBUTTONDOWN:
                     pos = pg.mouse.get_pos()
+
                     for ret, letra in self.alfabeto.CliqueLetra:
                         if ret.collidepoint(pos):
                             if letra not in self.letrasClicadas:
                                 self.letrasClicadas.append(letra)
                                 if letra in self.Palavras.PalavraUsada:
-                                    pg.mixer_music.load('./sons/correct.mp3')
+                                    pg.mixer_music.load('./sons/correct-6033.mp3')
                                     pg.mixer_music.play()
                                 else:
                                     chances += 1
-                                    pg.mixer_music.load('./sons/incorrect.mp3')
+                                    pg.mixer_music.load('./sons/incorrect-293358.mp3')
                                     pg.mixer_music.play()
 
-                if event.type == pg.MOUSEBUTTONDOWN:
-                    pos = pg.mouse.get_pos()
-
-            self.window.blit(self.bg_image, self.rect)
-            self.alfabeto.letrasAlfabeto(self.letrasClicadas)
-            self.Palavras.LinhasDasPalavras(self.letrasClicadas)
-            self.DrawForca(chances)
-            self.btJogarNovamente(self.window)
-            self.btMenuInicial(self.window)
+                    if btMenuInicial_rect.collidepoint(pos):
+                        return 'Menu'
+                    if btJogarNovamente_rect.collidepoint(pos):
+                        self.letrasClicadas = []
+                        self.Palavras.PalavrasRandom()
+                        chances = 0
+                        ganhou = False
+                        perdeu = False
+                        self.bg_image = pg.image.load(random.choice(self.bg_images))
 
             if not ganhou and all(letra.upper() in self.letrasClicadas or letra == " " for letra in self.Palavras.PalavraUsada):
                 ganhou = True
@@ -127,8 +139,6 @@ class JogoForca:
                 texto = fonte.render(f'Você perdeu! A palavra era: {self.Palavras.PalavraUsada}', True, (255, 0, 0))
                 textoRect = texto.get_rect(center=(self.window.get_width() // 2, 60))
                 self.window.blit(texto, textoRect)
-
-
 
             pg.display.flip()
         pg.quit()
