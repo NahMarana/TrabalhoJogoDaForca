@@ -2,7 +2,7 @@ import pygame.image
 from pygame import Rect, Surface
 from pygame.font import Font
 
-from code.Const import MENU_OPTION
+from mycode.Const import MENU_OPTION
 
 
 class Menu:

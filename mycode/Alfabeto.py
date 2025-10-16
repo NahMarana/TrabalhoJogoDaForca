@@ -19,12 +19,12 @@ class Alfabeto:
         Buttom = (altura - 2 * padding) // 3
         idAlfabeto = 0
 
-        for NumLinha, numCol in enumerate(QtdePorlinhas): # O primeiro for define as linhas e a quantidade de coluna
+        for NumLinha, numCol in enumerate(QtdePorlinhas):  # O primeiro for define as linhas e a quantidade de coluna
             # Definições com as medidas de onde cada letra fica dentro do botão
             larguraBotao = (largura - (numCol - 1) * padding) // numCol
             x1 = x0 + (largura - (numCol * larguraBotao + (numCol - 1) * padding)) // 2
             y1 = y0 + NumLinha * (Buttom + padding)
-            for col in range(numCol): # Segundo for define cada coluna da linha
+            for col in range(numCol):  # Segundo for define cada coluna da linha
                 # Criação do formato do botão, cores e medidas de onde vai ficar no jogo
                 x = x1 + col * (larguraBotao + padding)
                 CorDoFundo = (30, 30, 30)

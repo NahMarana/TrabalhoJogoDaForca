@@ -1,8 +1,8 @@
 import pygame
 
-from code.Const import MENU_OPTION
-from code.Menu import Menu
-from code.JogoForca import JogoForca
+from mycode.Const import MENU_OPTION
+from mycode.Menu import Menu
+from mycode.JogoForca import JogoForca
 
 
 class Game:

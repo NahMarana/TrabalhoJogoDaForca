@@ -1,7 +1,8 @@
 import random
 import pygame as pg
-from code.Alfabeto import Alfabeto
-from code.Palavras import Palavras
+from mycode.Alfabeto import Alfabeto
+from mycode.Palavras import Palavras
+from unidecode import unidecode
 
 
 class JogoForca:
@@ -9,13 +10,13 @@ class JogoForca:
         self.window = window
         self.name = name
         self.bgImages = ['./images/image1.png', './images/image2.png', './images/image3.png', './images/image4.png',
-                          './images/image5.png', './images/image6.png']
-        self.bgImage = pg.image.load(random.choice(self.bgImages)) # Muda aleatoriamente as imagens de fundo cada vez que vai jogar
+                         './images/image5.png', './images/image6.png']
+        self.bgImage = pg.image.load(random.choice(self.bgImages))  # Muda aleatoriamente as imagens de fundo cada vez que vai jogar
         self.rect = self.bgImage.get_rect(left=0, top=0)
         self.menu_option = menu_option
         self.alfabeto = Alfabeto(window)
         self.Palavras = Palavras(window)
-        self.letrasClicadas = [] # Armazena as letras clicadas pelo usuário
+        self.letrasClicadas = []  # Armazena as letras clicadas pelo usuário
         self.Palavras.PalavrasRandom()  # Escolhe aleatoriamente cada palavra do jogo
         self.font_rb = pg.font.SysFont("Space Mono", 25)
 
@@ -35,7 +36,7 @@ class JogoForca:
         if qtdeErros >= 5: pg.draw.line(self.window, branco, (300, 350), (375, 450), 10)
         if qtdeErros >= 6: pg.draw.line(self.window, branco, (300, 350), (225, 450), 10)
 
-    def btJogarNovamente(self, window): # Criação do botão Jogar novamente
+    def btJogarNovamente(self, window):  # Criação do botão Jogar novamente
         # Definições do tamanho do botão, cores e onde vai ficar posicionado dentro do jogo
         cinza = (30, 30, 30)
         amarelo = (255, 255, 0),
@@ -51,7 +52,7 @@ class JogoForca:
         window.blit(texto, textoRect)
         return rect
 
-    def btMenuInicial(self, window): # Criação do botão Menu Inicial
+    def btMenuInicial(self, window):  # Criação do botão Menu Inicial
         # Definições do tamanho do botão, cores e onde vai ficar posicionado dentro do jogo
         cinza = (30, 30, 30)
         amarelo = (255, 255, 0)
@@ -74,7 +75,7 @@ class JogoForca:
         ganhou = False
         perdeu = False
 
-        while rodandoJogo: # Loop que inicia o jogo
+        while rodandoJogo:  # Loop que inicia o jogo
             # Faz aparecer na tela os elementos criados
             self.window.blit(self.bgImage, self.rect)
             self.alfabeto.letrasAlfabeto(self.letrasClicadas)
@@ -83,17 +84,18 @@ class JogoForca:
             btJogarNovamente_rect = self.btJogarNovamente(self.window)
             btMenuInicial_rect = self.btMenuInicial(self.window)
 
-            for event in pg.event.get(): #
+            for event in pg.event.get():  #
                 if event.type == pg.QUIT:
                     rodandoJogo = False
 
-                if event.type == pg.KEYDOWN: # Evento para clicar nas letras pelo teclado
+                if event.type == pg.KEYDOWN:  # Evento para clicar nas letras pelo teclado
                     letra = event.unicode.upper()
                     if letra.isalpha() and len(letra) == 1:
                         if letra not in self.letrasClicadas:
-                            self.letrasClicadas.append(letra) # Adição das letras que já foram clicadas
+                            self.letrasClicadas.append(letra)  # Adição das letras que já foram clicadas
                             # Se a letra está correta vai tocar uma musica de acerto
-                            if letra in self.Palavras.PalavraUsada:
+                            if letra in unidecode(self.Palavras.PalavraUsada["palavra"]).upper(): # acrescentei a unidecode para
+                                    # transformar as letras que continham acentuação
                                 pg.mixer_music.load('./sons/correct-6033.mp3')
                                 pg.mixer_music.play()
                             # Se a letra está incorreta vai tocar uma musica de erro
@@ -102,14 +104,15 @@ class JogoForca:
                                 pg.mixer_music.load('./sons/incorrect-293358.mp3')
                                 pg.mixer_music.play()
 
-                if event.type == pg.MOUSEBUTTONDOWN: # Evento para clicar nas letras pelo mouse
+                if event.type == pg.MOUSEBUTTONDOWN:  # Evento para clicar nas letras pelo mouse
                     pos = pg.mouse.get_pos()
                     for ret, letra in self.alfabeto.CliqueLetra:
-                        if ret.collidepoint(pos): # Verificar se clicou dentro do botão
+                        if ret.collidepoint(pos):  # Verificar se clicou dentro do botão
                             if letra not in self.letrasClicadas:
-                                self.letrasClicadas.append(letra) # Adição das letras que já foram clicadas
+                                self.letrasClicadas.append(letra)  # Adição das letras que já foram clicadas
                                 # Se a letra está correta vai tocar uma musica de acerto
-                                if letra in self.Palavras.PalavraUsada:
+                                if letra in unidecode(self.Palavras.PalavraUsada["palavra"]).upper(): # acrescentei a unidecode para
+                                    # transformar as letras que continham acentuação
                                     pg.mixer_music.load('./sons/correct-6033.mp3')
                                     pg.mixer_music.play()
                                 # Se a letra está incorreta vai tocar uma musica de erro
@@ -118,9 +121,9 @@ class JogoForca:
                                     pg.mixer_music.load('./sons/incorrect-293358.mp3')
                                     pg.mixer_music.play()
 
-                    if btMenuInicial_rect.collidepoint(pos): # Clicando no botão Menu Inicial ele retorna para a tela de Menu
+                    if btMenuInicial_rect.collidepoint(pos):  # Clicando no botão Menu Inicial ele retorna para a tela de Menu
                         return 'Menu'
-                    if btJogarNovamente_rect.collidepoint(pos): # Clicando em Jogar novamente, vai resetar tudo: Letras, texto,
+                    if btJogarNovamente_rect.collidepoint(pos):  # Clicando em Jogar novamente, vai resetar tudo: Letras, texto,
                         # chances e mudar novamente o plano de fundo
                         self.letrasClicadas = []
                         self.Palavras.PalavrasRandom()
@@ -130,15 +133,15 @@ class JogoForca:
                         self.bgImage = pg.image.load(random.choice(self.bgImages))
 
             # Vai checar se ganhou, olhando todas as letras e espaços
-            if not ganhou and all(letra.upper() in self.letrasClicadas or letra == " " for letra in self.Palavras.PalavraUsada):
+            if not ganhou and all(letra.upper() in self.letrasClicadas or letra == " " for letra in self.Palavras.PalavraUsada["palavra"].upper()):
                 ganhou = True
-                pg.mixer_music.load('./sons/applause-cheer-236786.mp3') # Se ganhar o jogo vai tocar uma música de vitória
+                pg.mixer_music.load('./sons/applause-cheer-236786.mp3')  # Se ganhar o jogo vai tocar uma música de vitória
                 pg.mixer_music.play()
 
             # Vai checar se perdeu, se usou todas as quantidades de erros
             if not perdeu and chances >= qtdeErros:
                 perdeu = True
-                pg.mixer_music.load('./sons/fiasco-154915.mp3') # Se perder o jogo vai tocar uma música de derrota
+                pg.mixer_music.load('./sons/fiasco-154915.mp3')  # Se perder o jogo vai tocar uma música de derrota
                 pg.mixer_music.play()
 
             # Aqui assim que houver uma vitória vai aparecer um texto na tela dizendo que Ganhou o Jogo
@@ -150,7 +153,7 @@ class JogoForca:
             # Aqui assim que houver uma derrota vai aparecer um texto na tela dizendo que perdeu e qual era a palavra correta
             elif perdeu:
                 fonte = pg.font.SysFont("Space Mono", 30)
-                texto = fonte.render(f'Você perdeu! A palavra era: {self.Palavras.PalavraUsada}', True, (255, 0, 0))
+                texto = fonte.render(f'Você perdeu! A palavra era: {self.Palavras.PalavraUsada["palavra"]}', True, (255, 0, 0))
                 textoRect = texto.get_rect(center=(self.window.get_width() // 2, 60))
                 self.window.blit(texto, textoRect)
 
