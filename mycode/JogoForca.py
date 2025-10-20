@@ -10,7 +10,7 @@ class JogoForca:
         self.window = window
         self.name = name
         self.bgImages = ['./images/image1.png', './images/image2.png', './images/image3.png', './images/image4.png',
-                         './images/image5.png', './images/image6.png']
+                         './images/image5.png', './images/image6.png', './images/image7.png']
         self.bgImage = pg.image.load(random.choice(self.bgImages))  # Muda aleatoriamente as imagens de fundo cada vez que vai jogar
         self.rect = self.bgImage.get_rect(left=0, top=0)
         self.menu_option = menu_option
@@ -94,8 +94,8 @@ class JogoForca:
                         if letra not in self.letrasClicadas:
                             self.letrasClicadas.append(letra)  # Adição das letras que já foram clicadas
                             # Se a letra está correta vai tocar uma musica de acerto
-                            if letra in unidecode(self.Palavras.PalavraUsada["palavra"]).upper(): # acrescentei a unidecode para
-                                    # transformar as letras que continham acentuação
+                            if letra in unidecode(self.Palavras.PalavraUsada["palavra"]).upper():  # acrescentei a unidecode para
+                                # transformar as letras que continham acentuação
                                 pg.mixer_music.load('./sons/correct-6033.mp3')
                                 pg.mixer_music.play()
                             # Se a letra está incorreta vai tocar uma musica de erro
@@ -111,7 +111,8 @@ class JogoForca:
                             if letra not in self.letrasClicadas:
                                 self.letrasClicadas.append(letra)  # Adição das letras que já foram clicadas
                                 # Se a letra está correta vai tocar uma musica de acerto
-                                if letra in unidecode(self.Palavras.PalavraUsada["palavra"]).upper(): # acrescentei a unidecode para
+
+                                if letra in unidecode(self.Palavras.PalavraUsada["palavra"]).upper():  # acrescentei a unidecode para
                                     # transformar as letras que continham acentuação
                                     pg.mixer_music.load('./sons/correct-6033.mp3')
                                     pg.mixer_music.play()
@@ -133,7 +134,9 @@ class JogoForca:
                         self.bgImage = pg.image.load(random.choice(self.bgImages))
 
             # Vai checar se ganhou, olhando todas as letras e espaços
-            if not ganhou and all(letra.upper() in self.letrasClicadas or letra == " " for letra in self.Palavras.PalavraUsada["palavra"].upper()):
+            # Acrescentei o unidecode para conseguir rendezirar o texto e a musica de vitória
+            if not ganhou and all(letra.upper() in self.letrasClicadas or letra == " " for letra in unidecode(self.Palavras.PalavraUsada[
+                                                                                                                  "palavra"].upper())):
                 ganhou = True
                 pg.mixer_music.load('./sons/applause-cheer-236786.mp3')  # Se ganhar o jogo vai tocar uma música de vitória
                 pg.mixer_music.play()
